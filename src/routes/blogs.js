@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import BlogModal from '../db-models/blogSchema.js'
+import createHttpError from 'http-errors'
 
 const blogRouter = Router()
 
@@ -25,6 +26,7 @@ blogRouter.route('/')
 blogRouter.route('/:blogId')
 .get(async (req, res, next) => {
     try {
+        if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const blog = await BlogModal.findById(req.params.blogId)
         res.send(blog)
     } catch (error) {
