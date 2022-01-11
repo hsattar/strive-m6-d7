@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import mongoose from 'mongoose'
+import blogRouter from './routes/blogs.js'
 
 const { PORT, DB_CONNECTION } = process.env
 
@@ -8,6 +9,8 @@ const server = express()
 
 server.use(express.json())
 server.use(cors())
+
+server.use('/blogs', blogRouter)
 
 mongoose.connect(DB_CONNECTION)
 
