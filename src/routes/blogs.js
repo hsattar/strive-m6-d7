@@ -22,24 +22,27 @@ blogRouter.route('/')
     }
 })
 
-blogRouter.route('/:id')
+blogRouter.route('/:blogId')
 .get(async (req, res, next) => {
     try {
-        res.send('GET ID')
+        const blog = await BlogModal.findById(req.params.blogId)
+        res.send(blog)
     } catch (error) {
         next(error)
     }
 })
 .put(async (req, res, next) => {
     try {
-        res.send('PUT')
+        const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, req.body, { new: true })
+        res.send(blog)
     } catch (error) {
         next(error)
     }
 })
 .delete(async (req, res, next) => {
     try {
-        res.send('DELETE')
+        const deleteBlog = await BlogModal.findByIdAndDelete(req.params.blogId)
+        res.sendStatus(204)
     } catch (error) {
         next(error)
     }
