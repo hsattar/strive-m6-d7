@@ -59,4 +59,48 @@ blogRouter.route('/:blogId')
     }
 })
 
+blogRouter.route('/:blogId/comments')
+.get(async (req, res, next) => {
+    try {
+        const blog = await BlogModal.findById(req.params.blogId)
+        res.send(blog)
+    } catch (error) {
+        next(error)
+    }
+})
+.post(async (req, res, next) => {
+    try {
+        if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
+        const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, { $push: { comments: req.body} }, { new: true })
+        if (!blog) return next(createHttpError(400, `The id ${req.params.blogId} does not match any blogs`))      
+        res.send(blog)
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
+})
+
+blogRouter.route('/blogs/:blogId/comments/:commentid')
+.get(async (req, res, next) => {
+    try {
+        res.send('GET ID')
+    } catch (error) {
+        next(error)
+    }
+})
+.put(async (req, res, next) => {
+    try {
+        res.send('PUT')
+    } catch (error) {
+        next(error)
+    }
+})
+.delete(async (req, res, next) => {
+    try {
+        res.send('DELETE')
+    } catch (error) {
+        next(error)
+    }
+})
+
 export default blogRouter

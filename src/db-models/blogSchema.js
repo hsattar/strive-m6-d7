@@ -38,7 +38,17 @@ const blogSchema = new Schema({
     content: {
         type: String,
         required: true
-    }  
+    },
+    comments: [
+        {
+            comment: String,
+            rating: {
+                type: Number,
+                min: 1,
+                max: 5
+            }
+        }
+    ]
 }, { timestamps: true })
 
 export default model('Blog', blogSchema)
