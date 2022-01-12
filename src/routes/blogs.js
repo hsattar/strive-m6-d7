@@ -62,8 +62,10 @@ blogRouter.route('/:blogId')
 blogRouter.route('/:blogId/comments')
 .get(async (req, res, next) => {
     try {
-        const blog = await BlogModal.findById(req.params.blogId)
-        res.send(blog)
+        if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
+        const blog = await BlogModal.findById(req.params.blogId, { comments: 1, _id: 0 })
+        if (!blog) return next(createHttpError(400, `The id ${req.params.blogId} does not match any blogs`))    
+        res.send(blog.comments)
     } catch (error) {
         next(error)
     }
@@ -72,7 +74,7 @@ blogRouter.route('/:blogId/comments')
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, { $push: { comments: req.body} }, { new: true })
-        if (!blog) return next(createHttpError(400, `The id ${req.params.blogId} does not match any blogs`))      
+        if (!blog) return next(createHttpError(400, `The id ${req.params.blogId} does not match any blogs`))
         res.send(blog)
     } catch (error) {
         console.log(error)
@@ -80,10 +82,16 @@ blogRouter.route('/:blogId/comments')
     }
 })
 
-blogRouter.route('/blogs/:blogId/comments/:commentid')
+blogRouter.route('/:blogId/comments/:commentId')
 .get(async (req, res, next) => {
     try {
-        res.send('GET ID')
+        if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid Blog ID'))
+        if (req.params.commentId.length !== 24) return next(createHttpError(400, 'Invalid Comment ID'))
+        const blogComments = await BlogModal.findById(req.params.blogId, { comments: 1, _id: 0 })
+        if (!blogComments) return next(createHttpError(400, `The id ${req.params.blogId} does not match any blogs`))
+        const blogComment = blogComments.comments.find(({ _id }) => _id.toString() === req.params.commentId)
+        if (!blogComment) return next(createHttpError(400, `The id ${req.params.commentId} does not match any comments`))
+        res.send(blogComment)
     } catch (error) {
         next(error)
     }
