@@ -3,13 +3,16 @@ import BlogModal from '../db-models/blogSchema.js'
 import createHttpError from 'http-errors'
 import { blogBodyValidator } from '../middleware/validation.js'
 import { validationResult } from 'express-validator'
+import q2m from 'query-to-mongo'
 
 const blogRouter = Router()
 
 blogRouter.route('/')
 .get(async (req, res, next) => {
     try {
-        const blogs = await BlogModal.find()
+        const query = q2m(req.query)
+        console.log(query)
+        const blogs = await BlogModal.find(query.criteria, query.options.fields).sort(query.options.sort).skip(query.options.skip).limit(query.options.limit)
         res.send(blogs)
     } catch (error) {
         next(error)
