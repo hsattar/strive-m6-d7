@@ -105,7 +105,11 @@ blogRouter.route('/:blogId/comments/:commentId')
 })
 .delete(async (req, res, next) => {
     try {
-        res.send('DELETE')
+        if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid Blog ID'))
+        if (req.params.commentId.length !== 24) return next(createHttpError(400, 'Invalid Comment ID'))
+        const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, { $pull: { comments: { _id: req.params.commentId } } }, { new: true })
+        if (!blog) return next(createHttpError(400, `The id Blog or Comment ID does not match any blogs or comments for that blog`))
+        res.send(blog)
     } catch (error) {
         next(error)
     }
