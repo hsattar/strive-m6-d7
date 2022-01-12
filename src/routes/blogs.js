@@ -98,8 +98,25 @@ blogRouter.route('/:blogId/comments/:commentId')
 })
 .put(async (req, res, next) => {
     try {
-        res.send('PUT')
+        if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid Blog ID'))
+        if (req.params.commentId.length !== 24) return next(createHttpError(400, 'Invalid Comment ID'))
+
+        const blogComments = await BlogModal.findById(req.params.blogId, { comments: 1, _id: 0 })
+        console.log(blogComments)
+
+        if (!blogComments) return next(createHttpError(400, `The id ${req.params.blogId} does not match any blogs`))
+
+        const commentIndex = blogComments.comments.findIndex(({ _id }) => _id.toString() === req.params.commentId)
+        console.log(commentIndex)
+
+        if (!commentIndex) return next(createHttpError(400, `The id ${req.params.commentId} does not match any comments`))
+
+        blogComments.comments[commentIndex] = { ...blogComments[commentIndex], ...req.body }
+        await blogComments.save()
+
+        res.send(blogComments.comments[commentIndex])
     } catch (error) {
+        console.log(error)
         next(error)
     }
 })
