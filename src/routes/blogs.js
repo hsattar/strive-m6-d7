@@ -87,6 +87,15 @@ blogRouter.route('/:blogId')
     }
 })
 
+blogRouter.post('/:blogId/add-like', async(req, res, next) => {
+    try {
+        const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, { $push: { likes: req.body.userId } }, { new: true })
+        res.send(blog)
+    } catch (error) {
+        next(error)
+    }
+})
+
 blogRouter.route('/:blogId/comments')
 .get(async (req, res, next) => {
     try {
