@@ -11,7 +11,12 @@ blogRouter.route('/')
 .get(async (req, res, next) => {
     try {
         const query = q2m(req.query)
-        const blogs = await BlogModal.find(query.criteria, query.options.fields).sort(query.options.sort).skip(query.options.skip).limit(query.options.limit)
+        const blogs = await BlogModal.find(query.criteria, query.options.fields)
+        .sort(query.options.sort)
+        .skip(query.options.skip)
+        .limit(query.options.limit)
+        .populate('author', 'firstName lastName avatar')
+        .populate('likes')
         res.send(blogs)
     } catch (error) {
         next(error)
