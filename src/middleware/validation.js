@@ -35,20 +35,13 @@ export const blogBodyValidator = checkSchema({
             errorMessage: 'You must provide a value a unit'
         }
     },
-    // 'author.name': {
-    //     in: ['body'],
-    //     isLength: {
-    //         options: { min: 1 },
-    //         errorMessage: 'You must provide a name'
-    //     }
-    // },
-    // 'author.avatar': {
-    //     in: ['body'],
-    //     isLength: {
-    //         options: { min: 1 },
-    //         errorMessage: 'You must provide an avatar'
-    //     }
-    // },
+    author: {
+        in: ['body'],
+        isLength: {
+            options: [{ min: 24 }, { max: 24 }],
+            errorMessage: 'You must provide a valid author id'
+        }
+    },
     content: {
         in: ['body'],
         isLength: {
@@ -56,4 +49,28 @@ export const blogBodyValidator = checkSchema({
             errorMessage: 'You must provide some content'
         }
     }
+})
+
+export const userCreationValidator = checkSchema({
+    firstName: {
+        in: ['body'],
+        isLength: {
+            options: { min: 1 },
+            errorMessage: 'You must provide a first name'
+        }
+    }, 
+    lastName: {
+        in: ['body'],
+        isLength: {
+            options: { min: 1 },
+            errorMessage: 'You must provide a last name'
+        }
+    }, 
+    // avatar: {
+    //     in: ['body'],
+    //     isLength: {
+    //         options: { min: 1 },
+    //         errorMessage: 'You must provide a last name'
+    //     }
+    // }
 })

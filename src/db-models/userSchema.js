@@ -11,10 +11,7 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    avatar: {
-        type: String,
-        required: true
-    }
+    avatar: String
 }, { timestamps: true })
 
 export default model('User', userSchema)
