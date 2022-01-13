@@ -9,6 +9,9 @@ export const errorHandlers = (err, req, res, next) => {
         case 'CastError': 
             res.status(400).send(err)
             break
+        case 'TypeError': 
+            res.status(400).send(err)
+            break
         case 'NotFoundError': 
             res.status(404).send(err)        
             break

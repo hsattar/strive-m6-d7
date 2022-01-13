@@ -33,10 +33,11 @@ blogRouter.route('/:blogId')
 .get(async (req, res, next) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
-        const blog = await BlogModal.findById(req.params.blogId)
+        const blog = await BlogModal.findById(req.params.blogId).populate('author', 'firstName lastName avatar')
         if (!blog) return next(createHttpError(400, `The id ${req.params.blogId} does not match any blogs`))
         res.send(blog)
     } catch (error) {
+        console.log(error)
         next(error)
     }
 })
