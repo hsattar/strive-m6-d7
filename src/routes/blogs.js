@@ -11,7 +11,6 @@ blogRouter.route('/')
 .get(async (req, res, next) => {
     try {
         const query = q2m(req.query)
-        console.log(query)
         const blogs = await BlogModal.find(query.criteria, query.options.fields).sort(query.options.sort).skip(query.options.skip).limit(query.options.limit)
         res.send(blogs)
     } catch (error) {

@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import blogRouter from './routes/blogs.js'
+import userRouter from './routes/users.js'
 import { errorHandlers } from './middleware/errorHandlers.js'
 
 const { PORT, DB_CONNECTION } = process.env
@@ -12,6 +13,7 @@ server.use(express.json())
 server.use(cors())
 
 server.use('/blogs', blogRouter)
+server.use('/users', userRouter)
 
 server.use(errorHandlers)
 
