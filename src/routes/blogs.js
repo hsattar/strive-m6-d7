@@ -4,6 +4,7 @@ import createHttpError from 'http-errors'
 import { blogBodyValidator } from '../middleware/validation.js'
 import { validationResult } from 'express-validator'
 import q2m from 'query-to-mongo'
+import { blogData } from '../db-models/data/blogData.js'
 
 const blogRouter = Router()
 
@@ -29,6 +30,25 @@ blogRouter.route('/')
         const blog = new BlogModal(req.body)
         const newBlog = await blog.save()
         res.status(201).send(newBlog)
+    } catch (error) {
+        next(error)
+    }
+})
+
+blogRouter.post('/add-many-blogs', async(req, res, next) => {
+    try {
+        const blogs = await BlogModal.insertMany(blogData, { ordered: false })
+        res.send(blogs)
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
+})
+
+blogRouter.delete('/delete-old-blogs', async(req, res, next) => {
+    try {
+        const result = await BlogModal.deleteMany({"author.name": { $exists: true }})
+        res.status(200).send(`Deleted ${result} Blogs`)
     } catch (error) {
         next(error)
     }
