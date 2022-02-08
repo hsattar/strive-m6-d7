@@ -29,7 +29,7 @@ userRouter.route('/')
     }
 })
 
-userRouter.route('/:userId', authenticateUser)
+userRouter.route('/:userId', authenticateUser, authorization)
 .get(async (req, res, next) => {
     try {
         if (req.params.userId.length !== 24) return next(createHttpError(400, 'Invalid ID'))

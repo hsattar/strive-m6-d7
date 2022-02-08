@@ -5,6 +5,7 @@ import blogRouter from './routes/blogs.js'
 import userRouter from './routes/users.js'
 import { errorHandlers } from './middleware/errorHandlers.js'
 import { authenticateUser } from './middleware/authentication.js'
+import meRouter from './routes/me.js'
 
 const { PORT, DB_CONNECTION } = process.env
 
@@ -13,8 +14,9 @@ const server = express()
 server.use(express.json())
 server.use(cors())
 
-server.use('/blogs', authenticateUser, blogRouter)
 server.use('/users', userRouter)
+server.use('/me', authenticateUser, meRouter)
+server.use('/blogs', authenticateUser, blogRouter)
 
 server.use(errorHandlers)
 
