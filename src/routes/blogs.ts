@@ -117,7 +117,7 @@ blogRouter.route('/:blogId/comments')
     }
 })
 
-blogRouter.route('/:blogId/comments/:commentId', adminOnly)
+blogRouter.route('/:blogId/comments/:commentId')
 .get(async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid Blog ID'))
@@ -131,7 +131,7 @@ blogRouter.route('/:blogId/comments/:commentId', adminOnly)
         next(error)
     }
 })
-.put(async (req: Request, res: Response, next: NextFunction) => {
+.put(adminOnly, async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid Blog ID'))
         if (req.params.commentId.length !== 24) return next(createHttpError(400, 'Invalid Comment ID'))
@@ -146,7 +146,7 @@ blogRouter.route('/:blogId/comments/:commentId', adminOnly)
         next(error)
     }
 })
-.delete(async (req: Request, res: Response, next: NextFunction) => {
+.delete(adminOnly, async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid Blog ID'))
         if (req.params.commentId.length !== 24) return next(createHttpError(400, 'Invalid Comment ID'))

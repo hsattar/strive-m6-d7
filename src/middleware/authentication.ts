@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 import createHttpError from "http-errors"
 import atob from 'atob'
-import UserModal from '../db-models/userSchema.js'
+import UserModal from '../db-models/userSchema'
 
 export const authenticateUser = async (req: any, res: Response, next: NextFunction) => {
     try {

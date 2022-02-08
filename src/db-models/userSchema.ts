@@ -14,15 +14,17 @@ const userSchema = new Schema({
     role: { type: String, default: 'user' }
 }, { timestamps: true })
 
-userSchema.pre('save', async function(next: NextFunction) {
+
+userSchema.pre("save", async function (this: any, next: any) {
+    const user = this
     try {
-        if (this.isModified('password')) {
-            const hash = await bcrypt.hash(this.password, 11)
-            this.password = hash
+        if (user.isModified('password')) {
+            const hash = await bcrypt.hash(user.password, 11)
+            user.password = hash
         }
 
-        if (this.isModified('firstName') || this.isModified('lastName')) {
-            this.avatar = `https://ui-avatars.com/api/?name=${this.firstName}+${this.lastName}`
+        if (user.isModified('firstName') || user.isModified('lastName')) {
+            user.avatar = `https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}`
         }
 
         next()
@@ -30,6 +32,7 @@ userSchema.pre('save', async function(next: NextFunction) {
         next(error)
     }
 })
+
 
 userSchema.methods.toJSON = function() {
     const userObject = this.toObject()

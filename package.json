@@ -2,11 +2,10 @@
   "name": "strive-m6-d7",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "type": "module",
   "scripts": {
-    "dev": "nodemon -r dotenv/config ./src/server.js",
-    "ts": "ts-node-dev --respawn --transpile-only ./src/server.ts"
+    "dev": "ts-node-dev --respawn --transpile-only -r dotenv/config ./src/server.ts"
   },
   "keywords": [],
   "author": "",

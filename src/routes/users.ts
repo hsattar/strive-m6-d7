@@ -29,8 +29,8 @@ userRouter.route('/')
     }
 })
 
-userRouter.route('/:userId', authenticateUser, adminOnly)
-.get(async (req: any, res: Response, next: NextFunction) => {
+userRouter.route('/:userId')
+.get(authenticateUser, adminOnly, async (req: any, res: Response, next: NextFunction) => {
     try {
         if (req.params.userId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const user = await UserModal.findById(req.params.userId)
@@ -40,7 +40,7 @@ userRouter.route('/:userId', authenticateUser, adminOnly)
         next(error)
     }
 })
-.put(async (req: any, res: Response, next: NextFunction) => {
+.put(authenticateUser, adminOnly, async (req: any, res: Response, next: NextFunction) => {
     try {
         if (req.params.userId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const updatedUser = await UserModal.findByIdAndUpdate(req.params.userId, req.body, { new: true })
@@ -50,7 +50,7 @@ userRouter.route('/:userId', authenticateUser, adminOnly)
         next(error)
     }
 })
-.delete(async (req: any, res: Response, next: NextFunction) => {
+.delete(authenticateUser, adminOnly, async (req: any, res: Response, next: NextFunction) => {
     try {
         if (req.params.userId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const result = await UserModal.findByIdAndDelete(req.params.userId)
