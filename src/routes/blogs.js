@@ -4,7 +4,7 @@ import createHttpError from 'http-errors'
 import { blogBodyValidator } from '../middleware/validation.js'
 import { validationResult } from 'express-validator'
 import q2m from 'query-to-mongo'
-import { blogData } from '../db-models/data/blogData.js'
+import { blogData } from '../data/blogData.js'
 
 const blogRouter = Router()
 
