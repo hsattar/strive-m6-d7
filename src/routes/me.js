@@ -12,6 +12,10 @@ meRouter.route('/')
 })
 .put(async (req, res, next) => {
     try {
+        // req.user._doc = { ...req.user._doc, ...req.body }
+        // res.send(req.user)
+        // const updatedInfo = UserModal.findByIdAndUpdate(req.user._doc._id.toString(), req.body)
+        // res.send(updatedInfo)
         req.user.firstName = req.body.firstName || req.user.firstName
         req.user.lastName = req.body.lastName || req.user.lastName
         req.user.email = req.body.email || req.user.email

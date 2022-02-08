@@ -5,6 +5,7 @@ import { blogBodyValidator } from '../middleware/validation.js'
 import { validationResult } from 'express-validator'
 import q2m from 'query-to-mongo'
 import { blogData } from '../data/blogData.js'
+import { adminOnly } from '../middleware/authorization.js'
 
 const blogRouter = Router()
 
@@ -64,7 +65,7 @@ blogRouter.route('/:blogId')
         next(error)
     }
 })
-.put(async (req, res, next) => {
+.put(adminOnly, async (req, res, next) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, req.body, { new: true })
@@ -74,7 +75,7 @@ blogRouter.route('/:blogId')
         next(error)
     }
 })
-.delete(async (req, res, next) => {
+.delete(adminOnly, async (req, res, next) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const deleteBlog = await BlogModal.findByIdAndDelete(req.params.blogId)
@@ -116,7 +117,7 @@ blogRouter.route('/:blogId/comments')
     }
 })
 
-blogRouter.route('/:blogId/comments/:commentId')
+blogRouter.route('/:blogId/comments/:commentId', adminOnly)
 .get(async (req, res, next) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid Blog ID'))

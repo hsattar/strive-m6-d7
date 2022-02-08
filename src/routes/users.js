@@ -4,12 +4,12 @@ import { userCreationValidator } from '../middleware/validation.js'
 import { validationResult } from 'express-validator'
 import createHttpError from 'http-errors'
 import { authenticateUser } from '../middleware/authentication.js'
-import { authorization } from '../middleware/authorization.js'
+import { adminOnly } from '../middleware/authorization.js'
 
 const userRouter = Router()
 
 userRouter.route('/')
-.get(authenticateUser, authorization, async (req, res, next) => {
+.get(authenticateUser, adminOnly, async (req, res, next) => {
     try {
         const users = await UserModal.find()
         res.send(users)
@@ -29,7 +29,7 @@ userRouter.route('/')
     }
 })
 
-userRouter.route('/:userId', authenticateUser, authorization)
+userRouter.route('/:userId', authenticateUser, adminOnly)
 .get(async (req, res, next) => {
     try {
         if (req.params.userId.length !== 24) return next(createHttpError(400, 'Invalid ID'))

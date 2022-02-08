@@ -25,11 +25,11 @@ const blogSchema = new Schema({
             required: true
         }        
     },
-    author: {
+    author: [{
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
-    },
+    }],
     content: {
         type: String,
         required: true
