@@ -3,11 +3,12 @@ import UserModal from '../db-models/userSchema.js'
 import { userCreationValidator } from '../middleware/validation.js'
 import { validationResult } from 'express-validator'
 import createHttpError from 'http-errors'
+import { authenticateUser } from '../middleware/authentication.js'
 
 const userRouter = Router()
 
 userRouter.route('/')
-.get(async (req, res, next) => {
+.get(authenticateUser, async (req, res, next) => {
     try {
         const users = await UserModal.find()
         res.send(users)
@@ -23,12 +24,11 @@ userRouter.route('/')
         await newUser.save()
         res.send(newUser)
     } catch (error) {
-        console.log(error)
         next(error)
     }
 })
 
-userRouter.route('/:userId')
+userRouter.route('/:userId', authenticateUser)
 .get(async (req, res, next) => {
     try {
         if (req.params.userId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
@@ -36,7 +36,6 @@ userRouter.route('/:userId')
         if (!user) return next(createHttpError(400, `The id ${req.params.userId} does not match any users`))
         res.send(user)
     } catch (error) {
-        console.log(error)
         next(error)
     }
 })

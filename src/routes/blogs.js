@@ -40,7 +40,6 @@ blogRouter.post('/add-many-blogs', async(req, res, next) => {
         const blogs = await BlogModal.insertMany(blogData, { ordered: false })
         res.send(blogs)
     } catch (error) {
-        console.log(error)
         next(error)
     }
 })
@@ -62,7 +61,6 @@ blogRouter.route('/:blogId')
         if (!blog) return next(createHttpError(400, `The id ${req.params.blogId} does not match any blogs`))
         res.send(blog)
     } catch (error) {
-        console.log(error)
         next(error)
     }
 })
@@ -114,7 +112,6 @@ blogRouter.route('/:blogId/comments')
         if (!blog) return next(createHttpError(400, `The id ${req.params.blogId} does not match any blogs`))
         res.send(blog)
     } catch (error) {
-        console.log(error)
         next(error)
     }
 })
@@ -145,7 +142,6 @@ blogRouter.route('/:blogId/comments/:commentId')
         await blogs.save()
         res.send(blogs.comments[commentIndex])
     } catch (error) {
-        console.log(error)
         next(error)
     }
 })
