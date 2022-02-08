@@ -1,5 +1,7 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
+import { NextFunction } from 'express'
+import createHttpError from 'http-errors'
 
 const { Schema, model } = mongoose
 
@@ -12,7 +14,7 @@ const userSchema = new Schema({
     role: { type: String, default: 'user' }
 }, { timestamps: true })
 
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function(next: NextFunction) {
     try {
         if (this.isModified('password')) {
             const hash = await bcrypt.hash(this.password, 11)
@@ -44,7 +46,7 @@ userSchema.statics.authenticate = async function(email, password) {
         if (!pwMatch) return null
         return user
     } catch (error) {
-        next(error)
+        createHttpError(500, 'Server Error')
     }
 }
 

@@ -1,15 +1,14 @@
-import { Router } from 'express'
-import UserModal from '../db-models/userSchema.js'
-import BlogModal from '../db-models/blogSchema.js'
-import createHttpError from 'http-errors'
+import { NextFunction, Response, Router } from 'express'
+import UserModal from '../db-models/userSchema'
+import BlogModal from '../db-models/blogSchema'
 
 const meRouter = Router()
 
 meRouter.route('/')
-.get(async (req, res, next) => {
+.get(async (req: any, res: Response, next: NextFunction) => {
     res.send(req.user)
 })
-.put(async (req, res, next) => {
+.put(async (req: any, res: Response, next: NextFunction) => {
     try {
         // req.user._doc = { ...req.user._doc, ...req.body }
         // res.send(req.user)
@@ -24,7 +23,7 @@ meRouter.route('/')
         next(error)
     }
 })
-.delete(async (req, res, next) => {
+.delete(async (req: any, res: Response, next: NextFunction) => {
     try {
         await req.user.deleteOne()
         res.status(204).send()
@@ -34,7 +33,7 @@ meRouter.route('/')
 })
 
 meRouter.route('/blogs')
-.get(async (req, res, next) => {
+.get(async (req: any, res: Response, next: NextFunction) => {
     try {
         const blogs = await BlogModal.find()
         .populate('author', 'email')

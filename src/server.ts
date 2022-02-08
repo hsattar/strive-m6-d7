@@ -20,7 +20,7 @@ server.use('/blogs', authenticateUser, blogRouter)
 
 server.use(errorHandlers)
 
-mongoose.connect(DB_CONNECTION)
+mongoose.connect(DB_CONNECTION || '')
 
 mongoose.connection.on('connected', () => {
     console.log('DB Connected')

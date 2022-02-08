@@ -1,16 +1,16 @@
-import { Router } from 'express'
-import BlogModal from '../db-models/blogSchema.js'
+import { NextFunction, Request, Response, Router } from 'express'
+import BlogModal from '../db-models/blogSchema'
 import createHttpError from 'http-errors'
-import { blogBodyValidator } from '../middleware/validation.js'
+import { blogBodyValidator } from '../middleware/validation'
 import { validationResult } from 'express-validator'
 import q2m from 'query-to-mongo'
-import { blogData } from '../data/blogData.js'
-import { adminOnly } from '../middleware/authorization.js'
+import { blogData } from '../data/blogData'
+import { adminOnly } from '../middleware/authorization'
 
 const blogRouter = Router()
 
 blogRouter.route('/')
-.get(async (req, res, next) => {
+.get(async (req: Request, res: Response, next: NextFunction) => {
     try {
         const query = q2m(req.query)
         const blogs = await BlogModal.find(query.criteria, query.options.fields)
@@ -24,7 +24,7 @@ blogRouter.route('/')
         next(error)
     }
 })
-.post(blogBodyValidator, async (req, res, next) => {
+.post(blogBodyValidator, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const errors = validationResult(req)
         if (!errors.isEmpty()) return next(createHttpError(400, errors))
@@ -36,7 +36,7 @@ blogRouter.route('/')
     }
 })
 
-blogRouter.post('/add-many-blogs', async(req, res, next) => {
+blogRouter.post('/add-many-blogs', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const blogs = await BlogModal.insertMany(blogData, { ordered: false })
         res.send(blogs)
@@ -45,7 +45,7 @@ blogRouter.post('/add-many-blogs', async(req, res, next) => {
     }
 })
 
-blogRouter.delete('/delete-old-blogs', async(req, res, next) => {
+blogRouter.delete('/delete-old-blogs', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const result = await BlogModal.deleteMany({"author.name": { $exists: true }})
         res.status(200).send(`Deleted ${result} Blogs`)
@@ -55,7 +55,7 @@ blogRouter.delete('/delete-old-blogs', async(req, res, next) => {
 })
 
 blogRouter.route('/:blogId')
-.get(async (req, res, next) => {
+.get(async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const blog = await BlogModal.findById(req.params.blogId).populate('author', 'firstName lastName avatar')
@@ -65,7 +65,7 @@ blogRouter.route('/:blogId')
         next(error)
     }
 })
-.put(adminOnly, async (req, res, next) => {
+.put(adminOnly, async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, req.body, { new: true })
@@ -75,7 +75,7 @@ blogRouter.route('/:blogId')
         next(error)
     }
 })
-.delete(adminOnly, async (req, res, next) => {
+.delete(adminOnly, async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const deleteBlog = await BlogModal.findByIdAndDelete(req.params.blogId)
@@ -86,7 +86,7 @@ blogRouter.route('/:blogId')
     }
 })
 
-blogRouter.post('/:blogId/add-like', async(req, res, next) => {
+blogRouter.post('/:blogId/add-like', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, { $push: { likes: req.body.userId } }, { new: true })
         res.send(blog)
@@ -96,7 +96,7 @@ blogRouter.post('/:blogId/add-like', async(req, res, next) => {
 })
 
 blogRouter.route('/:blogId/comments')
-.get(async (req, res, next) => {
+.get(async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const blog = await BlogModal.findById(req.params.blogId, { comments: 1, _id: 0 })
@@ -106,7 +106,7 @@ blogRouter.route('/:blogId/comments')
         next(error)
     }
 })
-.post(async (req, res, next) => {
+.post(async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, { $push: { comments: req.body} }, { new: true })
@@ -118,26 +118,26 @@ blogRouter.route('/:blogId/comments')
 })
 
 blogRouter.route('/:blogId/comments/:commentId', adminOnly)
-.get(async (req, res, next) => {
+.get(async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid Blog ID'))
         if (req.params.commentId.length !== 24) return next(createHttpError(400, 'Invalid Comment ID'))
         const blogComments = await BlogModal.findById(req.params.blogId, { comments: 1, _id: 0 })
         if (!blogComments) return next(createHttpError(400, `The id ${req.params.blogId} does not match any blogs`))
-        const blogComment = blogComments.comments.find(({ _id }) => _id.toString() === req.params.commentId)
+        const blogComment = blogComments.comments.find(({ _id }: any) => _id.toString() === req.params.commentId)
         if (!blogComment) return next(createHttpError(400, `The id ${req.params.commentId} does not match any comments`))
         res.send(blogComment)
     } catch (error) {
         next(error)
     }
 })
-.put(async (req, res, next) => {
+.put(async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid Blog ID'))
         if (req.params.commentId.length !== 24) return next(createHttpError(400, 'Invalid Comment ID'))
         const blogs = await BlogModal.findById(req.params.blogId)
         if (!blogs) return next(createHttpError(400, `The id ${req.params.blogId} does not match any blogs`))
-        const commentIndex = blogs.comments.findIndex(({ _id }) => _id.toString() === req.params.commentId)
+        const commentIndex = blogs.comments.findIndex(({ _id }: any) => _id.toString() === req.params.commentId)
         if (!commentIndex) return next(createHttpError(400, `The id ${req.params.commentId} does not match any comments`))
         blogs.comments[commentIndex] = { ...blogs.comments[commentIndex].toObject(), ...req.body }
         await blogs.save()
@@ -146,7 +146,7 @@ blogRouter.route('/:blogId/comments/:commentId', adminOnly)
         next(error)
     }
 })
-.delete(async (req, res, next) => {
+.delete(async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid Blog ID'))
         if (req.params.commentId.length !== 24) return next(createHttpError(400, 'Invalid Comment ID'))

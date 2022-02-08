@@ -38,7 +38,7 @@ export const blogBodyValidator = checkSchema({
     author: {
         in: ['body'],
         isLength: {
-            options: [{ min: 24 }, { max: 24 }],
+            options: [{ min: 24, max: 24 }],
             errorMessage: 'You must provide a valid author id'
         }
     },
