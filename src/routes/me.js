@@ -1,8 +1,7 @@
 import { Router } from 'express'
 import UserModal from '../db-models/userSchema.js'
-import { validationResult } from 'express-validator'
+import BlogModal from '../db-models/blogSchema.js'
 import createHttpError from 'http-errors'
-import { authenticateUser } from '../middleware/authentication.js'
 
 const meRouter = Router()
 
@@ -29,6 +28,18 @@ meRouter.route('/')
     try {
         await req.user.deleteOne()
         res.status(204).send()
+    } catch (error) {
+        next(error)
+    }
+})
+
+meRouter.route('/blogs')
+.get(async (req, res, next) => {
+    try {
+        const blogs = await BlogModal.find()
+        .populate('author', 'email')
+        const myBlogs = blogs.filter(blog => blog.author[0].email  === req.user.email)
+        res.send(myBlogs)
     } catch (error) {
         next(error)
     }
