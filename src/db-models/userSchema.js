@@ -15,7 +15,7 @@ const userSchema = new Schema({
 userSchema.pre('save', async function(next) {
     try {
         if (this.isModified('password')) {
-            const hash = await bcrypt.hash(this.password, 12)
+            const hash = await bcrypt.hash(this.password, 11)
             this.password = hash
         }
 

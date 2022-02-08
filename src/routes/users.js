@@ -4,11 +4,12 @@ import { userCreationValidator } from '../middleware/validation.js'
 import { validationResult } from 'express-validator'
 import createHttpError from 'http-errors'
 import { authenticateUser } from '../middleware/authentication.js'
+import { authorization } from '../middleware/authorization.js'
 
 const userRouter = Router()
 
 userRouter.route('/')
-.get(authenticateUser, async (req, res, next) => {
+.get(authenticateUser, authorization, async (req, res, next) => {
     try {
         const users = await UserModal.find()
         res.send(users)
