@@ -20,9 +20,10 @@ userRouter.route('/')
         const errors = validationResult(req)
         if (!errors.isEmpty()) return next(createHttpError(400, errors))
         const newUser = new UserModal(req.body)
-        newUser.save()
+        await newUser.save()
         res.send(newUser)
     } catch (error) {
+        console.log(error)
         next(error)
     }
 })
