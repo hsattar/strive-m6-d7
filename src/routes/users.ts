@@ -1,4 +1,4 @@
-import { NextFunction, Response, Router } from 'express'
+import { NextFunction, Request, Response, Router } from 'express'
 import UserModal from '../db-models/userSchema'
 import { userCreationValidator } from '../middleware/validation'
 import { validationResult } from 'express-validator'
@@ -9,7 +9,7 @@ import { adminOnly } from '../middleware/authorization'
 const userRouter = Router()
 
 userRouter.route('/')
-.get(authenticateUser, adminOnly, async (req: any, res: Response, next: NextFunction) => {
+.get(authenticateUser, adminOnly, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const users = await UserModal.find()
         res.send(users)
@@ -17,7 +17,7 @@ userRouter.route('/')
         next(error)
     }
 })
-.post(userCreationValidator, async (req: any, res: Response, next: NextFunction) => {
+.post(userCreationValidator, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const errors = validationResult(req)
         if (!errors.isEmpty()) return next(createHttpError(400, errors))
@@ -30,7 +30,7 @@ userRouter.route('/')
 })
 
 userRouter.route('/:userId')
-.get(authenticateUser, adminOnly, async (req: any, res: Response, next: NextFunction) => {
+.get(authenticateUser, adminOnly, async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.params.userId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const user = await UserModal.findById(req.params.userId)
@@ -40,7 +40,7 @@ userRouter.route('/:userId')
         next(error)
     }
 })
-.put(authenticateUser, adminOnly, async (req: any, res: Response, next: NextFunction) => {
+.put(authenticateUser, adminOnly, async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.params.userId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const updatedUser = await UserModal.findByIdAndUpdate(req.params.userId, req.body, { new: true })
@@ -50,7 +50,7 @@ userRouter.route('/:userId')
         next(error)
     }
 })
-.delete(authenticateUser, adminOnly, async (req: any, res: Response, next: NextFunction) => {
+.delete(authenticateUser, adminOnly, async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.params.userId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const result = await UserModal.findByIdAndDelete(req.params.userId)

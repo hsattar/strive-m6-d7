@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 import { NextFunction } from 'express'
 import createHttpError from 'http-errors'
-import { IUser, IUserModel } from '../types/userSchema'
+import { IUser, IUserModel } from '../types/userInterface'
 
 const { Schema, model } = mongoose
 
@@ -44,7 +44,7 @@ userSchema.methods.toJSON = function() {
 
 userSchema.statics.authenticate = async function(email: string, password: string) {
     try {
-        const user = await this.findOne({ email })
+        const user: IUser = await this.findOne({ email })
         if (!user) return null
         const pwMatch = await bcrypt.compare(password, user.password)
         if (!pwMatch) return null
