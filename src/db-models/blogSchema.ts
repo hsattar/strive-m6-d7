@@ -1,8 +1,9 @@
 import mongoose from "mongoose"
+import { IBlogs } from "../types/blogInterface"
 
 const { Schema, model } = mongoose
 
-const blogSchema = new Schema({
+const blogSchema = new Schema<IBlogs>({
     category: {
         type: String,
         required: true
@@ -50,4 +51,4 @@ const blogSchema = new Schema({
     ]
 }, { timestamps: true })
 
-export default model('Blog', blogSchema)
+export default model<IBlogs>('Blog', blogSchema)

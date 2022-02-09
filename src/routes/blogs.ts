@@ -6,6 +6,7 @@ import { validationResult } from 'express-validator'
 import q2m from 'query-to-mongo'
 import { blogData } from '../data/blogData'
 import { adminOnly } from '../middleware/authorization'
+import { v4 as uuidv4 } from 'uuid'
 
 const blogRouter = Router()
 
@@ -109,7 +110,7 @@ blogRouter.route('/:blogId/comments')
 .post(async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
-        const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, { $push: { comments: req.body} }, { new: true })
+        const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, { $push: { comments: { ...req.body, id: uuidv4() }} }, { new: true })
         if (!blog) return next(createHttpError(400, `The id ${req.params.blogId} does not match any blogs`))
         res.send(blog)
     } catch (error) {
@@ -122,9 +123,9 @@ blogRouter.route('/:blogId/comments/:commentId')
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid Blog ID'))
         if (req.params.commentId.length !== 24) return next(createHttpError(400, 'Invalid Comment ID'))
-        const blogComments = await BlogModal.findById(req.params.blogId, { comments: 1, _id: 0 })
+        const blogComments = await BlogModal.findById(req.params.blogId, { comments: 1 })
         if (!blogComments) return next(createHttpError(400, `The id ${req.params.blogId} does not match any blogs`))
-        const blogComment = blogComments.comments.find(({ _id }: any) => _id.toString() === req.params.commentId)
+        const blogComment = blogComments.comments.find(({ id }) => id === req.params.commentId)
         if (!blogComment) return next(createHttpError(400, `The id ${req.params.commentId} does not match any comments`))
         res.send(blogComment)
     } catch (error) {
@@ -137,9 +138,9 @@ blogRouter.route('/:blogId/comments/:commentId')
         if (req.params.commentId.length !== 24) return next(createHttpError(400, 'Invalid Comment ID'))
         const blogs = await BlogModal.findById(req.params.blogId)
         if (!blogs) return next(createHttpError(400, `The id ${req.params.blogId} does not match any blogs`))
-        const commentIndex = blogs.comments.findIndex(({ _id }: any) => _id.toString() === req.params.commentId)
+        const commentIndex = blogs.comments.findIndex(({ id }) => id === req.params.commentId)
         if (!commentIndex) return next(createHttpError(400, `The id ${req.params.commentId} does not match any comments`))
-        blogs.comments[commentIndex] = { ...blogs.comments[commentIndex].toObject(), ...req.body }
+        blogs.comments[commentIndex] = { ...blogs.comments[commentIndex], ...req.body }
         await blogs.save()
         res.send(blogs.comments[commentIndex])
     } catch (error) {

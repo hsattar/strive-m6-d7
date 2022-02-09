@@ -1,6 +1,6 @@
-import { ErrorRequestHandler, NextFunction, Request, Response } from "express"
+import { ErrorRequestHandler } from "express"
 
-export const errorHandlers = (err: any, req: Request, res: Response, next: NextFunction) => {
+export const errorHandlers: ErrorRequestHandler = (err, req, res, next) => {
     console.log('THE ERROR', err.name)
     switch(err.name) {
         case 'ValidationError': 
