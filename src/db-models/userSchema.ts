@@ -2,10 +2,11 @@ import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 import { NextFunction } from 'express'
 import createHttpError from 'http-errors'
+import { IUser, IUserModel } from '../types/userSchema'
 
 const { Schema, model } = mongoose
 
-const userSchema = new Schema({
+const userSchema = new Schema<IUser>({
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     avatar: String,
@@ -41,7 +42,7 @@ userSchema.methods.toJSON = function() {
     return userObject
 }
 
-userSchema.statics.authenticate = async function(email, password) {
+userSchema.statics.authenticate = async function(email: string, password: string) {
     try {
         const user = await this.findOne({ email })
         if (!user) return null
@@ -53,4 +54,4 @@ userSchema.statics.authenticate = async function(email, password) {
     }
 }
 
-export default model('User', userSchema)
+export default model<IUser, IUserModel>('User', userSchema)
