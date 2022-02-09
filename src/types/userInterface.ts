@@ -1,5 +1,4 @@
-import { Request } from "express";
-import { Model } from "mongoose"
+import { Model, Document } from "mongoose"
 
 export interface IUser {
     firstName: string
@@ -11,6 +10,9 @@ export interface IUser {
     createdAt: Date
     updatedAt: Date
 }
+
+export type IUserDoc = IUser & Document 
+// export type IUserDoc = <Type extends Document>
 
 export interface IUserModel extends Model<IUser> {
     authenticate(email: string, password: string): IUser | null

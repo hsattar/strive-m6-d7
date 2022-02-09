@@ -8,7 +8,6 @@ meRouter.route('/')
     res.send(req.user)
 })
 .put(async (req: any, res: Response, next: NextFunction) => {
-    // FIXME: ABOVE
     try {
         req.user.firstName = req.body.firstName || req.user.firstName
         req.user.lastName = req.body.lastName || req.user.lastName
@@ -20,7 +19,6 @@ meRouter.route('/')
     }
 })
 .delete(async (req: any, res: Response, next: NextFunction) => {
-    // FIXME: ABOVE
     try {
         await req.user.deleteOne()
         res.status(204).send()

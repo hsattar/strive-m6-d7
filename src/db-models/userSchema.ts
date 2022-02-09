@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 import { NextFunction } from 'express'
 import createHttpError from 'http-errors'
-import { IUser, IUserModel } from '../types/userInterface'
+import { IUser, IUserDoc, IUserModel } from '../types/userInterface'
 
 const { Schema, model } = mongoose
 
@@ -16,16 +16,15 @@ const userSchema = new Schema<IUser>({
 }, { timestamps: true })
 
 
-userSchema.pre("save", async function (this: any, next: any) {
-    const user = this
+userSchema.pre("save", async function (next: any) {
     try {
-        if (user.isModified('password')) {
-            const hash = await bcrypt.hash(user.password, 11)
-            user.password = hash
+        if (this.isModified('password')) {
+            const hash = await bcrypt.hash(this.password, 11)
+            this.password = hash
         }
 
-        if (user.isModified('firstName') || user.isModified('lastName')) {
-            user.avatar = `https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}`
+        if (this.isModified('firstName') || this.isModified('lastName')) {
+            this.avatar = `https://ui-avatars.com/api/?name=${this.firstName}+${this.lastName}`
         }
 
         next()
