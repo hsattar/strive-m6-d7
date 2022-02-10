@@ -1,27 +1,32 @@
 import { NextFunction, Request, Response, Router } from 'express'
-import BlogModal from '../db-models/blogSchema'
+import createHttpError from 'http-errors'
+import UserModal from '../db-models/userSchema'
 
 const meRouter = Router()
 
 meRouter.route('/')
 .get(async (req: Request, res: Response, next: NextFunction) => {
-    res.send(req.user)
+    try {
+        const user = await UserModal.findById(req.user._id)
+        res.send(user)
+    } catch (error) {
+        next(error)
+    }
 })
 .put(async (req: any, res: Response, next: NextFunction) => {
     try {
-        req.user.firstName = req.body.firstName || req.user.firstName
-        req.user.lastName = req.body.lastName || req.user.lastName
-        req.user.email = req.body.email || req.user.email
-        await req.user.save()
-        res.send(req.user)
+        const user = await UserModal.findByIdAndUpdate(req.user._id, req.body, { new: true, runValidators: true })
+        if (!user) return next(createHttpError(404, 'User not found'))
+        res.send(user)
     } catch (error) {
         next(error)
     }
 })
 .delete(async (req: any, res: Response, next: NextFunction) => {
     try {
-        await req.user.deleteOne()
-        res.status(204).send()
+        const user = await UserModal.findByIdAndDelete(req.user._id)
+        if (!user) return next(createHttpError(404, 'User not found'))
+        res.sendStatus(204)
     } catch (error) {
         next(error)
     }

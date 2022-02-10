@@ -5,17 +5,17 @@ export const errorHandlers: ErrorRequestHandler = (err, req, res, next) => {
     switch(err.name) {
         case 'ValidationError': 
         case 'BadRequestError': 
-            res.status(400).send(err)
+            return res.status(400).send(err)
         case 'UnauthorizedError':
         case 'JsonWebTokenError':
         case 'TokenExpiredError':
-            res.status(401).send(err.message)
+            return res.status(401).send(err.message)
         case 'ForbiddenError': 
-            res.status(403).send(err.message)
+            return res.status(403).send(err.message)
         case 'NotFoundError': 
-            res.status(404).send(err)        
+            return res.status(404).send(err) 
         default: 
             console.log(err);
-            res.status(500).send('Server Error')
+            return res.status(500).send('Server Error')
     }
 }

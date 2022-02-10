@@ -11,7 +11,7 @@ import { IUserDoc } from '../types/userInterface'
 const userRouter = Router()
 
 userRouter.route('/')
-.get(authenticateUser, adminOnly, async (req: Request, res: Response, next: NextFunction) => {
+.get( async (req: Request, res: Response, next: NextFunction) => {
     try {
         const users = await UserModal.find()
         res.send(users)

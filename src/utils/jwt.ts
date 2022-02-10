@@ -40,8 +40,6 @@ export const verifyRefreshTokenAndGenerateNewTokens = async (token: string) => {
         const { accessToken, refreshToken } = await createNewTokens(user)
         return { accessToken, refreshToken }
     } catch (error) {
-        console.log(error);
-        
         throw createHttpError(401, 'Ivalid Details')
     }
 }
