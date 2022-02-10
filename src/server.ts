@@ -14,9 +14,9 @@ const server = express()
 server.use(express.json())
 server.use(cors())
 
+server.use('/users', userRouter)
 server.use('/me', authenticateUser, meRouter)
 server.use('/blogs', authenticateUser, blogRouter)
-server.use('/users', userRouter)
 
 server.use(errorHandlers)
 

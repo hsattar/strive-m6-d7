@@ -11,9 +11,9 @@ import { IUserDoc } from '../types/userInterface'
 const userRouter = Router()
 
 userRouter.route('/')
-.get( async (req: Request, res: Response, next: NextFunction) => {
+.get(authenticateUser, adminOnly, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const users = await UserModal.find()
+        const users = await UserModal.find({}, { refreshToken: 0 })
         res.send(users)
     } catch (error) {
         next(error)
@@ -57,7 +57,7 @@ userRouter.route('/:userId')
 .get(authenticateUser, adminOnly, async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.params.userId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
-        const user = await UserModal.findById(req.params.userId)
+        const user = await UserModal.findById(req.params.userId, { refreshToken: 0 })
         if (!user) return next(createHttpError(400, `The id ${req.params.userId} does not match any users`))
         res.send(user)
     } catch (error) {

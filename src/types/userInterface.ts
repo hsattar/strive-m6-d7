@@ -16,6 +16,7 @@ export interface IUser {
     refreshToken: string
     createdAt: Date
     updatedAt: Date
+    blogs?: Types.ObjectId[]
 }
 
 export type IUserDoc = IUser & Document 

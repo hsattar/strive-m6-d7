@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt'
 import { NextFunction } from 'express'
 import createHttpError from 'http-errors'
 import { IUser, IUserModel } from '../types/userInterface'
+import blogSchema from './blogSchema'
 
 const { Schema, model } = mongoose
 
@@ -13,7 +14,11 @@ const userSchema = new Schema<IUser>({
     email: {  type: String, required: true },
     password: { type: String, required: true },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
-    refreshToken: String
+    refreshToken: String,
+    blogs: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Blog'
+    }]
 }, { timestamps: true })
 
 
