@@ -7,6 +7,7 @@ import q2m from 'query-to-mongo'
 import { blogData } from '../data/blogData'
 import { adminOnly } from '../middleware/authorization'
 import blogCommentsRouter from './blogComments'
+import { userCreatorOrAdmin } from '../utils/authCheck'
 
 const blogRouter = Router({ mergeParams: true })
 
@@ -37,19 +38,10 @@ blogRouter.route('/')
     }
 })
 
-blogRouter.post('/add-many-blogs', async (req: Request, res: Response, next: NextFunction) => {
+blogRouter.post('/add-many-blogs', adminOnly, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const blogs = await BlogModal.insertMany(blogData, { ordered: false })
         res.send(blogs)
-    } catch (error) {
-        next(error)
-    }
-})
-
-blogRouter.delete('/delete-old-blogs', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const result = await BlogModal.deleteMany({"author.name": { $exists: true }})
-        res.status(200).send(`Deleted ${result} Blogs`)
     } catch (error) {
         next(error)
     }
@@ -66,21 +58,27 @@ blogRouter.route('/:blogId')
         next(error)
     }
 })
-.put(adminOnly, async (req: Request, res: Response, next: NextFunction) => {
+.put(async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
-        const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, req.body, { new: true })
-        if (!blog) return next(createHttpError(400, `The id ${req.params.blogId} does not match any blogs`))
+        const originalBlog = await BlogModal.findById(req.params.blogId)
+        if (!originalBlog) return next(createHttpError(400, `The id ${req.params.blogId} does not match any blogs`))
+        const editable = userCreatorOrAdmin(req.user, originalBlog)
+        if (!editable) return next(createHttpError(401, 'You cannot edit this blog'))
+        const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, req.body, { new: true, runValidators: true })
         res.send(blog)
     } catch (error) {
         next(error)
     }
 })
-.delete(adminOnly, async (req: Request, res: Response, next: NextFunction) => {
+.delete(async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
-        const deleteBlog = await BlogModal.findByIdAndDelete(req.params.blogId)
-        if (!deleteBlog) return next(createHttpError(400, `The id ${req.params.blogId} does not match any blogs`))
+        const blog = await BlogModal.findById(req.params.blogId)
+        if (!blog) return next(createHttpError(400, `The id ${req.params.blogId} does not match any blogs`))
+        const deletable = userCreatorOrAdmin(req.user, blog)
+        if (!deletable) return next(createHttpError(401, `You cannot delete this blog`))
+        const deleted = await BlogModal.findByIdAndDelete(req.params.blogId)
         res.sendStatus(204)
     } catch (error) {
         next(error)
@@ -89,7 +87,18 @@ blogRouter.route('/:blogId')
 
 blogRouter.post('/:blogId/add-like', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, { $push: { likes: req.body.userId } }, { new: true })
+        const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, { $push: { likes: req.user._id } }, { new: true })
+        if (!blog) return next(createHttpError(404, `The id ${req.params.blogId} does not match any blogs`))
+        res.send(blog)
+    } catch (error) {
+        next(error)
+    }
+})
+
+blogRouter.post('/:blogId/remove-like', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, { $pull: { likes: req.user._id } }, { new: true })
+        if (!blog) return next(createHttpError(404, `The id ${req.params.blogId} does not match any blogs`))
         res.send(blog)
     } catch (error) {
         next(error)
