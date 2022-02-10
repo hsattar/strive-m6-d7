@@ -5,8 +5,11 @@ import { validationResult } from 'express-validator'
 import createHttpError from 'http-errors'
 import { authenticateUser } from '../middleware/authentication'
 import { adminOnly } from '../middleware/authorization'
+import { generateJWTToken } from '../utils/jwt'
 
 const userRouter = Router()
+
+const { JWT_ACCESS_TOKEN_SECRET: ACCESS_SECRET, JWT_REFRESH_TOKEN_SECRET: REFRESH_SECRET } = process.env
 
 userRouter.route('/')
 .get(authenticateUser, adminOnly, async (req: Request, res: Response, next: NextFunction) => {
@@ -24,6 +27,19 @@ userRouter.route('/')
         const newUser = new UserModal(req.body)
         await newUser.save()
         res.send(newUser)
+    } catch (error) {
+        next(error)
+    }
+})
+
+userRouter.post('/login', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email, password } = req.body
+        const user = await UserModal.authenticate(email, password)
+        if (!user) return next(createHttpError(401, `Invalid Details`))
+        const accessToken = await generateJWTToken({ _id: user._id.toString(), role: user.role}, ACCESS_SECRET!, '15 m')
+        const refreshToken = await generateJWTToken({ _id: user._id.toString()}, REFRESH_SECRET!, '1 week')
+        res.send({ accessToken, refreshToken })
     } catch (error) {
         next(error)
     }

@@ -1,4 +1,4 @@
-import { IUser, IUserDoc } from "./userInterface"
+import { IUser } from "./userInterface"
 
 declare global {
     namespace Express {

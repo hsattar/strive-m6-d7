@@ -1,6 +1,7 @@
 import { Types } from "mongoose"
 
 export interface IBlogs {
+    _id: Types.ObjectId
     category: string
     title: string
     cover: string
