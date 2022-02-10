@@ -5,11 +5,10 @@ import { validationResult } from 'express-validator'
 import createHttpError from 'http-errors'
 import { authenticateUser } from '../middleware/authentication'
 import { adminOnly } from '../middleware/authorization'
-import { generateJWTToken } from '../utils/jwt'
+import { createNewTokens } from '../utils/jwt'
+import { IUserDoc } from '../types/userInterface'
 
 const userRouter = Router()
-
-const { JWT_ACCESS_TOKEN_SECRET: ACCESS_SECRET, JWT_REFRESH_TOKEN_SECRET: REFRESH_SECRET } = process.env
 
 userRouter.route('/')
 .get(authenticateUser, adminOnly, async (req: Request, res: Response, next: NextFunction) => {
@@ -37,9 +36,16 @@ userRouter.post('/login', async (req: Request, res: Response, next: NextFunction
         const { email, password } = req.body
         const user = await UserModal.authenticate(email, password)
         if (!user) return next(createHttpError(401, `Invalid Details`))
-        const accessToken = await generateJWTToken({ _id: user._id.toString(), role: user.role}, ACCESS_SECRET!, '15 m')
-        const refreshToken = await generateJWTToken({ _id: user._id.toString()}, REFRESH_SECRET!, '1 week')
+        const { accessToken, refreshToken } = await createNewTokens(user as IUserDoc)
         res.send({ accessToken, refreshToken })
+    } catch (error) {
+        next(error)
+    }
+})
+
+userRouter.post('/refresh-token', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        
     } catch (error) {
         next(error)
     }

@@ -1,4 +1,4 @@
-import { Model, Types } from "mongoose"
+import { Model, Document, Types } from "mongoose"
 
 export interface TokenDetails {
     _id: Types.ObjectId
@@ -15,6 +15,8 @@ export interface IUser extends TokenDetails {
     createdAt: Date
     updatedAt: Date
 }
+
+export type IUserDoc = IUser & Document 
 
 export interface IUserModel extends Model<IUser> {
     authenticate(email: string, password: string): IUser | null

@@ -6,7 +6,9 @@ export const errorHandlers: ErrorRequestHandler = (err, req, res, next) => {
         case 'ValidationError': 
         case 'BadRequestError': 
             res.status(400).send(err)
-        case 'UnauthorizedError': 
+        case 'UnauthorizedError':
+        case 'JsonWebTokenError':
+        case 'TokenExpiredError':
             res.status(401).send(err.message)
         case 'ForbiddenError': 
             res.status(403).send(err.message)
