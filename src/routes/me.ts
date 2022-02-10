@@ -27,16 +27,16 @@ meRouter.route('/')
     }
 })
 
-meRouter.route('/blogs')
-.get(async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const blogs = await BlogModal.find()
-        .populate<{author: { email: string }[]}>('author', 'email')
-        const myBlogs = blogs.filter(blog => blog.author[0].email  === req.user.email)
-        res.send(myBlogs)
-    } catch (error) {
-        next(error)
-    }
-})
+// meRouter.route('/blogs')
+// .get(async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//         const blogs = await BlogModal.find()
+//         .populate<{author: { email: string }[]}>('author', 'email')
+//         const myBlogs = blogs.filter(blog => blog.author[0].email  === req.user.email)
+//         res.send(myBlogs)
+//     } catch (error) {
+//         next(error)
+//     }
+// })
 
 export default meRouter

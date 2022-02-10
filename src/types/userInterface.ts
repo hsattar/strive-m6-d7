@@ -1,13 +1,16 @@
-import { Model, Document, Types } from "mongoose"
+import { Model, Types } from "mongoose"
 
-export interface IUser {
+export interface TokenDetails {
     _id: Types.ObjectId
+    role: string
+}
+
+export interface IUser extends TokenDetails {
     firstName: string
     lastName: string
     avatar: string
     email: string
     password: string
-    role: string
     refreshhToken: string
     createdAt: Date
     updatedAt: Date

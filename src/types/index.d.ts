@@ -1,9 +1,9 @@
-import { IUser } from "./userInterface"
+import { TokenDetails } from "./userInterface"
 
 declare global {
     namespace Express {
         interface Request {
-            user: IUser
+            user: TokenDetails
         }
     }
 }
