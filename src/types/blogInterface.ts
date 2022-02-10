@@ -6,10 +6,10 @@ export interface IBlogs {
     title: string
     cover: string
     readTime: IReadTime
-    author: Types.ObjectId[]
+    author: Types.ObjectId
     content: string
     likes: Types.ObjectId[]
-    comments: IComments[]
+    comments: IComment[]
     createdAt: Date
     updatedAt: Date
 }
@@ -19,8 +19,9 @@ export interface IReadTime {
     unit: string
 }
 
-export interface IComments {
+export interface IComment {
     id: string
+    author: Types.ObjectId
     comment: string
     rating: number
 }

@@ -26,11 +26,11 @@ const blogSchema = new Schema<IBlogs>({
             required: true
         }        
     },
-    author: [{
+    author: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
-    }],
+    },
     content: {
         type: String,
         required: true
@@ -39,16 +39,19 @@ const blogSchema = new Schema<IBlogs>({
         type: Schema.Types.ObjectId,
         ref: 'User'
     }],
-    comments: [
-        {
-            comment: String,
-            rating: {
-                type: Number,
-                min: 1,
-                max: 5
-            }
+    comments: [{
+        author: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        },
+        comment: String,
+        rating: {
+            type: Number,
+            min: 1,
+            max: 5
         }
-    ]
+    }]
 }, { timestamps: true })
 
 export default model<IBlogs>('Blog', blogSchema)
