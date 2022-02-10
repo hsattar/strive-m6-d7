@@ -5,7 +5,7 @@ import { validationResult } from 'express-validator'
 import createHttpError from 'http-errors'
 import { authenticateUser } from '../middleware/authentication'
 import { adminOnly } from '../middleware/authorization'
-import { createNewTokens } from '../utils/jwt'
+import { createNewTokens, verifyRefreshTokenAndGenerateNewTokens } from '../utils/jwt'
 import { IUserDoc } from '../types/userInterface'
 
 const userRouter = Router()
@@ -45,7 +45,9 @@ userRouter.post('/login', async (req: Request, res: Response, next: NextFunction
 
 userRouter.post('/refresh-token', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        
+        const { token } = req.body
+        const { accessToken, refreshToken } = await verifyRefreshTokenAndGenerateNewTokens(token)
+        res.send({ accessToken, refreshToken })
     } catch (error) {
         next(error)
     }
