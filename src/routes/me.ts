@@ -5,7 +5,7 @@ import UserModal from '../db-models/userSchema'
 const meRouter = Router()
 
 meRouter.route('/')
-.get(async (req: Request, res: Response, next: NextFunction) => {
+.get(async (req: any, res: Response, next: NextFunction) => {
     try {
         const user = await UserModal.findById(req.user._id, { refreshToken: 0 })
         res.send(user)
@@ -13,19 +13,18 @@ meRouter.route('/')
         next(error)
     }
 })
-.put(async (req: Request, res: Response, next: NextFunction) => {
+.put(async (req: any, res: Response, next: NextFunction) => {
     try {
-        const user = await UserModal.findByIdAndUpdate(req.user._id, req.body, { new: true, runValidators: true })
-        // const user = await UserModal.findById(req.user._id)
+        const user = await UserModal.findById(req.user._id)
         if (!user) return next(createHttpError(404, 'User not found'))
-        // user.password = req.body.password
-        // await user.save()
+        user.password = req.body.password
+        await user.save()
         res.send(user)
     } catch (error) {
         next(error)
     }
 })
-.delete(async (req: Request, res: Response, next: NextFunction) => {
+.delete(async (req: any, res: Response, next: NextFunction) => {
     try {
         const user = await UserModal.findByIdAndDelete(req.user._id)
         if (!user) return next(createHttpError(404, 'User not found'))
@@ -36,7 +35,7 @@ meRouter.route('/')
 })
 
 meRouter.route('/blogs')
-.get(async (req: Request, res: Response, next: NextFunction) => {
+.get(async (req: any, res: Response, next: NextFunction) => {
     try {
         const user = await UserModal.findById(req.user._id, { refreshToken: 0 })
         .populate('blogs')

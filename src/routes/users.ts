@@ -11,6 +11,8 @@ import passport from 'passport'
 
 const userRouter = Router()
 
+const { FE_URL } = process.env
+
 userRouter.route('/')
 .get(authenticateUser, adminOnly, async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -56,9 +58,9 @@ userRouter.post('/refresh-token', async (req: Request, res: Response, next: Next
 
 userRouter.get('/googleLogin', passport.authenticate('google', { scope: ['email', 'profile'] }))
 
-userRouter.get('/googleRedirect', passport.authenticate('google'), async (req: Request, res: Response, next: NextFunction) => {
+userRouter.get('/googleRedirect', passport.authenticate('google'), async (req: any, res: Response, next: NextFunction) => {
     try {
-        
+        res.redirect(`${FE_URL}`)
     } catch (error) {
         next(error)
     }

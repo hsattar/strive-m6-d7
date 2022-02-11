@@ -2,14 +2,15 @@ import passport from "passport"
 import GoogleStrategy from "passport-google-oauth20"
 import UsersModel from "../db-models/userSchema"
 import { createNewTokens } from "./jwt"
+import { IGoogleProfile } from "../types/googleProfileInterface"
 
-const { GOOGLE_OAUTH_ID, GOOGLE_OAUTH_SECRET, BE_URL } = process.env
+const { GOOGLE_OAUTH_ID, GOOGLE_OUATH_SECRET, BE_URL } = process.env
 
 const googleStrategy = new GoogleStrategy({
     clientID: GOOGLE_OAUTH_ID,
-    clientSecret: GOOGLE_OAUTH_SECRET,
+    clientSecret: GOOGLE_OUATH_SECRET,
     callbackURL: `${BE_URL}/users/googleRedirect`,
-  }, async (accessToken: string, refreshToken: string, profile: any, passportNext: any) => {
+  }, async (accessToken: string, refreshToken: string, profile: IGoogleProfile, passportNext: any) => {
     try {
       console.log("PROFILE: ", profile)
       const user = await UsersModel.findOne({ googleId: profile.id })

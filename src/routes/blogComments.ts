@@ -17,7 +17,7 @@ blogCommentsRouter.route('/')
         next(error)
     }
 })
-.post(async (req: Request, res: Response, next: NextFunction) => {
+.post(async (req: any, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, { $push: { comments: { ...req.body, author: req.user._id, id: uuidv4() }} }, { new: true })
@@ -42,7 +42,7 @@ blogCommentsRouter.route('/:commentId')
         next(error)
     }
 })
-.put(async (req: Request, res: Response, next: NextFunction) => {
+.put(async (req: any, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid Blog ID'))
         if (req.params.commentId.length !== 24) return next(createHttpError(400, 'Invalid Comment ID'))
@@ -59,7 +59,7 @@ blogCommentsRouter.route('/:commentId')
         next(error)
     }
 })
-.delete(async (req: Request, res: Response, next: NextFunction) => {
+.delete(async (req: any, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid Blog ID'))
         if (req.params.commentId.length !== 24) return next(createHttpError(400, 'Invalid Comment ID'))

@@ -58,7 +58,7 @@ blogRouter.route('/:blogId')
         next(error)
     }
 })
-.put(async (req: Request, res: Response, next: NextFunction) => {
+.put(async (req: any, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const originalBlog = await BlogModal.findById(req.params.blogId)
@@ -71,7 +71,7 @@ blogRouter.route('/:blogId')
         next(error)
     }
 })
-.delete(async (req: Request, res: Response, next: NextFunction) => {
+.delete(async (req: any, res: Response, next: NextFunction) => {
     try {
         if (req.params.blogId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const blog = await BlogModal.findById(req.params.blogId)
@@ -85,7 +85,7 @@ blogRouter.route('/:blogId')
     }
 })
 
-blogRouter.post('/:blogId/add-like', async (req: Request, res: Response, next: NextFunction) => {
+blogRouter.post('/:blogId/add-like', async (req: any, res: Response, next: NextFunction) => {
     try {
         const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, { $push: { likes: req.user._id } }, { new: true })
         if (!blog) return next(createHttpError(404, `The id ${req.params.blogId} does not match any blogs`))
@@ -95,7 +95,7 @@ blogRouter.post('/:blogId/add-like', async (req: Request, res: Response, next: N
     }
 })
 
-blogRouter.post('/:blogId/remove-like', async (req: Request, res: Response, next: NextFunction) => {
+blogRouter.post('/:blogId/remove-like', async (req: any, res: Response, next: NextFunction) => {
     try {
         const blog = await BlogModal.findByIdAndUpdate(req.params.blogId, { $pull: { likes: req.user._id } }, { new: true })
         if (!blog) return next(createHttpError(404, `The id ${req.params.blogId} does not match any blogs`))
