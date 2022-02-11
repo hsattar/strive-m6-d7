@@ -16,7 +16,10 @@ meRouter.route('/')
 .put(async (req: Request, res: Response, next: NextFunction) => {
     try {
         const user = await UserModal.findByIdAndUpdate(req.user._id, req.body, { new: true, runValidators: true })
+        // const user = await UserModal.findById(req.user._id)
         if (!user) return next(createHttpError(404, 'User not found'))
+        // user.password = req.body.password
+        // await user.save()
         res.send(user)
     } catch (error) {
         next(error)

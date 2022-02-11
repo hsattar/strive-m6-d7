@@ -7,6 +7,7 @@ import { authenticateUser } from '../middleware/authentication'
 import { adminOnly } from '../middleware/authorization'
 import { createNewTokens, verifyRefreshTokenAndGenerateNewTokens } from '../utils/jwt'
 import { IUserDoc } from '../types/userInterface'
+import passport from 'passport'
 
 const userRouter = Router()
 
@@ -48,6 +49,16 @@ userRouter.post('/refresh-token', async (req: Request, res: Response, next: Next
         const { token } = req.body
         const { accessToken, refreshToken } = await verifyRefreshTokenAndGenerateNewTokens(token)
         res.send({ accessToken, refreshToken })
+    } catch (error) {
+        next(error)
+    }
+})
+
+userRouter.get('/googleLogin', passport.authenticate('google', { scope: ['email', 'profile'] }))
+
+userRouter.get('/googleRedirect', passport.authenticate('google'), async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        
     } catch (error) {
         next(error)
     }

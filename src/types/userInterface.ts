@@ -11,7 +11,8 @@ export interface IUser {
     lastName: string
     avatar: string
     email: string
-    password: string
+    password?: string
+    googleId?: string
     role: string
     refreshToken: string
     createdAt: Date

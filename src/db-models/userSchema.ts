@@ -11,8 +11,9 @@ const userSchema = new Schema<IUser>({
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     avatar: String,
-    email: {  type: String, required: true },
-    password: { type: String, required: true },
+    email: {  type: String, required: true, unique: true },
+    password: String,
+    googleId: String,
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
     refreshToken: String,
     blogs: [{
@@ -24,6 +25,8 @@ const userSchema = new Schema<IUser>({
 
 userSchema.pre("save", async function (next: any) {
     try {
+        console.log('you reached this point')
+        
         if (this.isModified('password')) {
             const hash = await bcrypt.hash(this.password, 11)
             this.password = hash
@@ -51,7 +54,7 @@ userSchema.statics.authenticate = async function(email: string, password: string
     try {
         const user: IUser = await this.findOne({ email })
         if (!user) return null
-        const pwMatch = await bcrypt.compare(password, user.password)
+        const pwMatch = await bcrypt.compare(password, user.password!)
         if (!pwMatch) return null
         return user
     } catch (error) {
