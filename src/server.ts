@@ -8,14 +8,16 @@ import googleStrategy from './utils/oauth'
 import { errorHandlers } from './middleware/errorHandlers'
 import { authenticateUser } from './middleware/authentication'
 import meRouter from './routes/me'
+import cookieParser from 'cookie-parser'
 
-const { PORT, DB_CONNECTION } = process.env
+const { PORT, DB_CONNECTION, FE_URL } = process.env
 
 const server = express()
 passport.use('google', googleStrategy)
 
 server.use(express.json())
-server.use(cors())
+server.use(cookieParser())
+server.use(cors({ origin: FE_URL, credentials: true }))
 server.use(passport.initialize())
 
 server.use('/users', userRouter)

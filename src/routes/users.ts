@@ -40,7 +40,17 @@ userRouter.post('/login', async (req: Request, res: Response, next: NextFunction
         const user = await UserModal.authenticate(email, password)
         if (!user) return next(createHttpError(401, `Invalid Details`))
         const { accessToken, refreshToken } = await createNewTokens(user as IUserDoc)
-        res.send({ accessToken, refreshToken })
+        res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production" ? true : false,
+            sameSite: "strict",
+        })
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production" ? true : false,
+            sameSite: "strict",
+        })
+        res.send('Tokens Sent')
     } catch (error) {
         next(error)
     }
@@ -48,8 +58,8 @@ userRouter.post('/login', async (req: Request, res: Response, next: NextFunction
 
 userRouter.post('/refresh-token', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { token } = req.body
-        const { accessToken, refreshToken } = await verifyRefreshTokenAndGenerateNewTokens(token)
+        if (!req.cookies.refreshToken) return next(createHttpError(401, 'No Authorization provided'))
+        const { accessToken, refreshToken } = await verifyRefreshTokenAndGenerateNewTokens(req.cookies.refreshToken)
         res.send({ accessToken, refreshToken })
     } catch (error) {
         next(error)
@@ -60,6 +70,17 @@ userRouter.get('/googleLogin', passport.authenticate('google', { scope: ['email'
 
 userRouter.get('/googleRedirect', passport.authenticate('google'), async (req: any, res: Response, next: NextFunction) => {
     try {
+        const { accessToken, refreshToken } = await req.user.tokens
+        res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production" ? true : false,
+            sameSite: "strict",
+        })
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production" ? true : false,
+            sameSite: "strict",
+        })
         res.redirect(`${FE_URL}`)
     } catch (error) {
         next(error)
